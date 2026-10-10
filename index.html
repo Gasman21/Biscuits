@@ -165,7 +165,7 @@
     <nav class="tabs" aria-label="Main navigation">
         <button id="game-tab" type="button" aria-selected="true" aria-controls="game-page">Game</button>
         <button id="shop-tab" type="button" aria-selected="false" aria-controls="shop-page">Shop</button>
-        <button id="achievements-tab" type="button" aria-selected="false" aria-controls="achievements-page">Achievements <span id="achievement-count">0/9</span></button>
+        <button id="achievements-tab" type="button" aria-selected="false" aria-controls="achievements-page">Achievements <span id="achievement-count">0/8</span></button>
     </nav>
     <main>
     <section id="game-page">
@@ -211,15 +211,6 @@
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVvSj1CAsFHF5piw2NjW-rgPKFoecenKYTLb5yar5TrA&s=10" alt="Buy Lucky Paw">
                 </button>
                 <p>Cost: $<span id="lucky-cost-display">75</span></p>
-            </article>
-            <article class="shop-item">
-                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Money Tree</h3>
-                <p>Pays $1 per level every 10 seconds.</p>
-                <button id="bank-upgrade" type="button" aria-label="Grow Money Tree">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-SlbzAk5tLIyfaJoYP4ERr_R_iUBrmXyU2zB8OuzDOA&s=10" alt="Grow Money Tree">
-                </button>
-                <p>Cost: $<span id="bank-cost-display">100</span></p>
-                <p>Income: $<span id="bank-income-display">0</span> / 10 sec</p>
             </article>
         </div>
     </section>
@@ -268,12 +259,6 @@
                 <progress max="5" value="0" aria-label="Fortune Kitty progress"></progress>
                 <span class="achievement-status">0/5</span>
             </article>
-            <article id="achievement-money-tree" class="achievement-item">
-                <h3>Money Grows</h3>
-                <p>Grow your first Money Tree level.</p>
-                <progress max="1" value="0" aria-label="Money Grows progress"></progress>
-                <span class="achievement-status">0/1</span>
-            </article>
             <article id="achievement-wealthy" class="achievement-item">
                 <h3>Well-Off</h3>
                 <p>Earn $500 in total.</p>
@@ -293,9 +278,6 @@
         let click_upgrade_cost = 25;
         let lucky_level = 0;
         let lucky_upgrade_cost = 75;
-        let bank_level = 0;
-        let bank_upgrade_cost = 100;
-        let bank_timer = 0;
         let btn = document.getElementById("btn");
         let disp = document.getElementById("display");
         let upgradeDisp = document.getElementById("upgrade-display");
@@ -306,8 +288,6 @@
         let luckyChanceDisp = document.getElementById("lucky-chance-display");
         let luckyCostDisp = document.getElementById("lucky-cost-display");
         let luckyUpgradeButton = document.getElementById("lucky-upgrade");
-        let bankCostDisp = document.getElementById("bank-cost-display");
-        let bankIncomeDisp = document.getElementById("bank-income-display");
         let gamePage = document.getElementById("game-page");
         let shopPage = document.getElementById("shop-page");
         let achievementPage = document.getElementById("achievements-page");
@@ -327,7 +307,6 @@
             { id: "power-up", target: 2, getProgress: function () { return click_power; } },
             { id: "lucky", target: 1, getProgress: function () { return lucky_level; } },
             { id: "lucky-master", target: 5, getProgress: function () { return lucky_level; } },
-            { id: "money-tree", target: 1, getProgress: function () { return bank_level; } }
         ];
 
         function showAchievementNotification(title) {
@@ -422,16 +401,6 @@
         });
 
         setInterval(function () {
-            if (bank_level > 0) {
-                bank_timer++;
-                if (bank_timer >= 10) {
-                    bank_timer = 0;
-                    click_count += bank_level;
-                    total_money_earned += bank_level;
-                    disp.innerHTML = click_count;
-                    updateAchievements();
-                }
-            }
             if (upgrade_count > 0) {
                 let autoClicks = upgrade_count;
                 click_count += autoClicks;
@@ -484,18 +453,6 @@
                     luckyUpgradeButton.textContent = "Max level";
                     luckyUpgradeButton.disabled = true;
                 }
-                updateAchievements();
-            }
-        });
-
-        document.getElementById("bank-upgrade").addEventListener("click", function () {
-            if (click_count >= bank_upgrade_cost) {
-                click_count -= bank_upgrade_cost;
-                bank_level++;
-                bank_upgrade_cost = Math.floor(bank_upgrade_cost * 1.7);
-                disp.innerHTML = click_count;
-                bankCostDisp.innerHTML = bank_upgrade_cost;
-                bankIncomeDisp.innerHTML = bank_level;
                 updateAchievements();
             }
         });
