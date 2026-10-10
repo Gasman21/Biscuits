@@ -6,6 +6,46 @@
         --red: #c1121f;
         --white: #ffffff;
         --black: #000000;
+        --font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        --font-body: 16px;
+        --font-card-title: 18px;
+        --font-section-title: 22px;
+        --font-page-title: 28px;
+    }
+    body {
+        font-family: var(--font-family);
+        font-size: var(--font-body);
+        line-height: 1.5;
+    }
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body p,
+    body button {
+        font-family: var(--font-family) !important;
+    }
+    body h1 {
+        font-size: var(--font-page-title) !important;
+        line-height: 1.2;
+    }
+    body h2 {
+        font-size: var(--font-section-title) !important;
+        line-height: 1.25;
+    }
+    body h3 {
+        font-size: var(--font-card-title) !important;
+        line-height: 1.3;
+    }
+    body h4,
+    body p {
+        font-size: var(--font-body) !important;
+    }
+    body p.balance {
+        font-size: var(--font-page-title) !important;
+    }
+    body button {
+        font-size: var(--font-body) !important;
     }
     #btn {
         border: 0;
@@ -24,7 +64,8 @@
         position: fixed;
         z-index: 10;
         color: var(--red);
-        font: bold 24px Comic Sans MS, Comic Sans, cursive;
+        font-size: var(--font-card-title);
+        font-weight: bold;
         text-shadow: 1px 2px 0 white;
         pointer-events: none;
         animation: float-up 700ms ease-out forwards;
@@ -49,7 +90,8 @@
         border-radius: 6px;
         background: var(--black);
         color: var(--white);
-        font: bold 18px Comic Sans MS, Comic Sans, cursive;
+        font-size: var(--font-body);
+        font-weight: bold;
         cursor: pointer;
     }
     .tabs button[aria-selected="true"] {
@@ -89,6 +131,24 @@
         opacity: 0.6;
         cursor: default;
     }
+    .shop-item button.purchase-denied,
+    .rebirth-panel button.purchase-denied {
+        animation: purchase-denied 320ms ease-in-out;
+    }
+    .purchase-warning {
+        margin: 10px 0 0;
+        padding: 8px 10px;
+        border: 2px solid var(--red);
+        border-radius: 6px;
+        background: var(--black);
+        color: var(--white);
+        font-weight: bold;
+    }
+    @keyframes purchase-denied {
+        0%, 100% { transform: translateX(0); filter: drop-shadow(0 0 0 transparent); }
+        25% { transform: translateX(-5px); filter: drop-shadow(0 0 7px var(--red)); }
+        75% { transform: translateX(5px); filter: drop-shadow(0 0 7px var(--red)); }
+    }
     .achievement-list {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 320px));
@@ -122,6 +182,36 @@
         color: var(--red);
         font-weight: bold;
     }
+    .rebirth-panel {
+        width: min(420px, calc(100% - 32px));
+        box-sizing: border-box;
+        margin: 24px auto;
+        padding: 16px;
+        border: 2px solid var(--red);
+        border-radius: 6px;
+        background: var(--black);
+        color: var(--white);
+    }
+    .rebirth-panel button {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+    .rebirth-panel button img {
+        display: block;
+        width: min(250px, 100%);
+        height: auto;
+        margin: 0 auto;
+    }
+    .rebirth-panel button:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+    .rebirth-panel button[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
     #achievement-notifications {
         position: fixed;
         top: 16px;
@@ -146,66 +236,94 @@
         margin-bottom: 4px;
         color: var(--red);
     }
+    .money-warning {
+        padding: 12px 14px;
+        border: 2px solid var(--red);
+        border-radius: 6px;
+        background: var(--black);
+        color: var(--white);
+        animation: notification-in 180ms ease-out both;
+    }
+    .money-warning strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--red);
+    }
     @keyframes notification-in {
         from { opacity: 0; transform: translateY(-8px); }
         to { opacity: 1; transform: translateY(0); }
     }
     @media (prefers-reduced-motion: reduce) {
         .achievement-notification { animation: none; }
+        .money-warning,
+        .shop-item button.purchase-denied,
+        .rebirth-panel button.purchase-denied { animation: none; }
     }
 </style>
 <body style="background-color: var(--black); color: var(--white); text-align: center;">
-    <h1 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">
+    <h1 style="color: var(--white);">
         Clicker
     
     </h1>
-    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 32px;">
+    <p class="balance" style="color: var(--white);">
         $<span id="display">0</span>
     </p>
     <nav class="tabs" aria-label="Main navigation">
         <button id="game-tab" type="button" aria-selected="true" aria-controls="game-page">Game</button>
         <button id="shop-tab" type="button" aria-selected="false" aria-controls="shop-page">Shop</button>
-        <button id="achievements-tab" type="button" aria-selected="false" aria-controls="achievements-page">Achievements <span id="achievement-count">0/8</span></button>
+        <button id="achievements-tab" type="button" aria-selected="false" aria-controls="achievements-page">Achievements <span id="achievement-count">0/10</span></button>
     </nav>
     <main>
     <section id="game-page">
-    <h4 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">
+    <h4 style="color: var(--white);">
         Click the kitty :3
     </h4>
     <button id="btn"><img src="data:image/jpeg;base64,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" alt="Kitty" width="250" height="250"></button>
-    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size : 20px;">
+    <p style="color: var(--white);">
         Autoclickers: <span id="upgrade-count">0</span>
     </p>
-    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size : 20px;">
+    <p style="color: var(--white);">
         Auto-clicks per second: <span id="cps-display">0</span>
+    </p>
+    <p style="color: var(--white);">
+        Auto-click speed: x<span id="auto-speed-display">1</span>
     </p>
     </section>
     <section id="shop-page" hidden>
-        <h2 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Shop</h2>
+        <h2 style="color: var(--white);">Shop</h2>
         <div class="shop-grid">
             <article class="shop-item">
-                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Autoclicker</h3>
+                <h3 style="color: var(--white);">Autoclicker</h3>
                 <p>Earns $1 automatically every second.</p>
                 <button id="upgrade" type="button" aria-label="Buy autoclicker">
                     <img src="https://www.lovemeow.com/media-library/image.jpg?id=4142900&width=800&quality=85" alt="Autoclicker upgrade">
                 </button>
-                <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 20px;">
+                <p style="color: var(--white);">
                     Cost: $<span id="upgrade-display">10</span>
                 </p>
             </article>
             <article class="shop-item">
-                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Click Power</h3>
+                <h3 style="color: var(--white);">Auto Click Speed</h3>
+                <p>Make all autoclickers tick 25% faster per upgrade.</p>
+                <p>Current speed: x<span id="shop-auto-speed-display">1</span></p>
+                <button id="auto-speed-upgrade" type="button" aria-label="Upgrade auto click speed">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfKYF8L3XNBXjKGSwmhYvSSGB6YBET1ImuJVu-_vgu9A&s=10" alt="Upgrade auto click speed">
+                </button>
+                <p>Cost: $<span id="auto-speed-cost-display">100</span></p>
+            </article>
+            <article class="shop-item">
+                <h3 style="color: var(--white);">Click Power</h3>
                 <p>Doubles the money earned with each manual click.</p>
                 <button id="click-upgrade" type="button" aria-label="Upgrade click power">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpz9Fkg5yMdzt7CiZVs2Y6lIpc3MNfvD8EtErvhVwjcQ&s=10" alt="Click power upgrade">
                 </button>
-                <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 20px;">
+                <p style="color: var(--white);">
                     Cost: $<span id="click-upgrade-display">25</span>
                     | Power: x<span id="click-power-display">1</span>
                 </p>
             </article>
             <article class="shop-item">
-                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Lucky Paw</h3>
+                <h3 style="color: var(--white);">Lucky Paw</h3>
                 <p>Lucky clicks earn 3x money. Chance: <span id="lucky-chance-display">0%</span></p>
                 <button id="lucky-upgrade" type="button" aria-label="Buy Lucky Paw">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVvSj1CAsFHF5piw2NjW-rgPKFoecenKYTLb5yar5TrA&s=10" alt="Buy Lucky Paw">
@@ -213,9 +331,21 @@
                 <p>Cost: $<span id="lucky-cost-display">75</span></p>
             </article>
         </div>
+        <section class="rebirth-panel" aria-labelledby="rebirth-title">
+            <h2 id="rebirth-title">Rebirth</h2>
+            <p>Rebirth resets your cash and upgrades, but keeps lifetime achievements.</p>
+            <button id="rebirth-button" type="button" aria-label="Rebirth" aria-disabled="true">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4E9dDrzfuhTZyVH1Dx54lQKHQaFs-JOQAguw5gECVTw&s=10" alt="Rebirth">
+            </button>
+            <p>Requirement: $<span id="rebirth-cost">1000</span></p>
+            <p>Rebirths: <span id="rebirth-count">0</span></p>
+            <p>Earnings multiplier: x<span id="earnings-multiplier">1</span></p>
+            <p>Next rebirth bonus: random x1.25 to x2 and a new color theme.</p>
+            <p>Current theme: <span id="theme-name">Classic</span></p>
+        </section>
     </section>
     <section id="achievements-page" hidden>
-        <h2 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Achievements</h2>
+        <h2 style="color: var(--white);">Achievements</h2>
         <div class="achievement-list">
             <article id="achievement-first-click" class="achievement-item">
                 <h3>First Paw</h3>
@@ -265,6 +395,18 @@
                 <progress max="500" value="0" aria-label="Well-Off progress"></progress>
                 <span class="achievement-status">0/500</span>
             </article>
+            <article id="achievement-first-rebirth" class="achievement-item">
+                <h3>Second Beginning</h3>
+                <p>Complete your first rebirth.</p>
+                <progress max="1" value="0" aria-label="Second Beginning progress"></progress>
+                <span class="achievement-status">0/1</span>
+            </article>
+            <article id="achievement-rebirth-legend" class="achievement-item">
+                <h3>Rebirth Legend</h3>
+                <p>Complete 5 rebirths.</p>
+                <progress max="5" value="0" aria-label="Rebirth Legend progress"></progress>
+                <span class="achievement-status">0/5</span>
+            </article>
         </div>
     </section>
     </main>
@@ -274,20 +416,41 @@
         let total_money_earned = 0;
         let upgrade_cost = 10;
         let upgrade_count = 0;
+        let auto_click_speed = 1;
+        let auto_speed_upgrade_cost = 100;
+        let auto_click_progress = 0;
         let click_power = 1;
         let click_upgrade_cost = 25;
         let lucky_level = 0;
         let lucky_upgrade_cost = 75;
+        let rebirth_count = 0;
+        let earnings_multiplier = 1;
+        let currentTheme = "Classic";
+        let rebirthThemes = [
+            { name: "Ocean", accent: "#36c5f0", foreground: "#eefaff", background: "#061b2c" },
+            { name: "Forest", accent: "#59c173", foreground: "#f0fff4", background: "#071d10" },
+            { name: "Violet", accent: "#c084fc", foreground: "#fff8ff", background: "#190d26" },
+            { name: "Sunset", accent: "#ff7849", foreground: "#fff5ef", background: "#24100c" },
+            { name: "Gold", accent: "#f5c542", foreground: "#fffbea", background: "#211b08" }
+        ];
         let btn = document.getElementById("btn");
         let disp = document.getElementById("display");
         let upgradeDisp = document.getElementById("upgrade-display");
         let upgradeCountDisp = document.getElementById("upgrade-count");
         let cpsDisp = document.getElementById("cps-display");
+        let autoSpeedDisp = document.getElementById("auto-speed-display");
+        let shopAutoSpeedDisp = document.getElementById("shop-auto-speed-display");
+        let autoSpeedCostDisp = document.getElementById("auto-speed-cost-display");
         let clickUpgradeDisp = document.getElementById("click-upgrade-display");
         let clickPowerDisp = document.getElementById("click-power-display");
         let luckyChanceDisp = document.getElementById("lucky-chance-display");
         let luckyCostDisp = document.getElementById("lucky-cost-display");
         let luckyUpgradeButton = document.getElementById("lucky-upgrade");
+        let rebirthCostDisp = document.getElementById("rebirth-cost");
+        let rebirthCountDisp = document.getElementById("rebirth-count");
+        let earningsMultiplierDisp = document.getElementById("earnings-multiplier");
+        let themeNameDisp = document.getElementById("theme-name");
+        let rebirthButton = document.getElementById("rebirth-button");
         let gamePage = document.getElementById("game-page");
         let shopPage = document.getElementById("shop-page");
         let achievementPage = document.getElementById("achievements-page");
@@ -307,6 +470,8 @@
             { id: "power-up", target: 2, getProgress: function () { return click_power; } },
             { id: "lucky", target: 1, getProgress: function () { return lucky_level; } },
             { id: "lucky-master", target: 5, getProgress: function () { return lucky_level; } },
+            { id: "first-rebirth", target: 1, getProgress: function () { return rebirth_count; } },
+            { id: "rebirth-legend", target: 5, getProgress: function () { return rebirth_count; } },
         ];
 
         function showAchievementNotification(title) {
@@ -322,13 +487,32 @@
             setTimeout(function () { notification.remove(); }, 4500);
         }
 
+        function showInsufficientFunds(button, cost) {
+            button.classList.remove("purchase-denied");
+            void button.offsetWidth;
+            button.classList.add("purchase-denied");
+            setTimeout(function () { button.classList.remove("purchase-denied"); }, 320);
+
+            let purchaseCard = button.closest(".shop-item, .rebirth-panel");
+            let warning = purchaseCard.querySelector(".purchase-warning");
+            if (!warning) {
+                warning = document.createElement("p");
+                warning.className = "purchase-warning";
+                warning.setAttribute("role", "status");
+                purchaseCard.insertBefore(warning, button.nextSibling);
+            }
+            warning.textContent = "Not enough money. You need $" + Math.ceil(cost - click_count) + " more.";
+            clearTimeout(warning.dismissTimer);
+            warning.dismissTimer = setTimeout(function () { warning.remove(); }, 4000);
+        }
+
         function updateAchievements() {
             let unlockedCount = 0;
             for (let achievement of achievements) {
                 let progress = Math.min(achievement.getProgress(), achievement.target);
-                let unlocked = progress >= achievement.target;
+                let unlocked = unlockedAchievements.has(achievement.id) || progress >= achievement.target;
                 let card = document.getElementById("achievement-" + achievement.id);
-                card.querySelector("progress").value = progress;
+                card.querySelector("progress").value = unlocked ? achievement.target : progress;
                 card.querySelector(".achievement-status").textContent = unlocked
                     ? "Unlocked"
                     : Math.floor(progress) + "/" + achievement.target;
@@ -390,19 +574,46 @@
             setTimeout(function () { feedback.remove(); }, 700);
         }
 
+        function updateRebirthUI() {
+            let rebirthCost = 1000 * Math.pow(2, rebirth_count);
+            rebirthCostDisp.textContent = rebirthCost;
+            rebirthCountDisp.textContent = rebirth_count;
+            earningsMultiplierDisp.textContent = Number(earnings_multiplier.toFixed(2));
+            themeNameDisp.textContent = currentTheme;
+            rebirthButton.setAttribute("aria-disabled", String(click_count < rebirthCost));
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.style.setProperty("--red", theme.accent);
+            document.documentElement.style.setProperty("--white", theme.foreground);
+            document.documentElement.style.setProperty("--black", theme.background);
+            currentTheme = theme.name;
+        }
+
+        function updateAutoSpeedUI() {
+            let formattedSpeed = Number(auto_click_speed.toFixed(2));
+            autoSpeedDisp.textContent = formattedSpeed;
+            shopAutoSpeedDisp.textContent = formattedSpeed;
+            autoSpeedCostDisp.textContent = auto_speed_upgrade_cost;
+            cpsDisp.textContent = Number((upgrade_count * auto_click_speed).toFixed(2));
+        }
+
         btn.addEventListener("click", function (event) {
             let luckyHit = lucky_level > 0 && Math.random() < lucky_level * 0.1;
-            let earned = click_power * (luckyHit ? 3 : 1);
+            let earned = Math.floor(click_power * (luckyHit ? 3 : 1) * earnings_multiplier);
             click_count += earned;
             total_money_earned += earned;
             disp.innerHTML = click_count;
             showClickEffect(luckyHit ? earned + "!" : earned, event.clientX, event.clientY);
             updateAchievements();
+            updateRebirthUI();
         });
 
         setInterval(function () {
-            if (upgrade_count > 0) {
-                let autoClicks = upgrade_count;
+            auto_click_progress += upgrade_count * auto_click_speed * earnings_multiplier / 10;
+            let autoClicks = Math.floor(auto_click_progress);
+            if (autoClicks > 0) {
+                auto_click_progress -= autoClicks;
                 click_count += autoClicks;
                 total_money_earned += autoClicks;
                 disp.innerHTML = click_count;
@@ -413,51 +624,118 @@
                     kittyBounds.top + kittyBounds.height / 2
                 );
                 updateAchievements();
+                updateRebirthUI();
             }
-        }, 1000);
+        }, 100);
         
         document.getElementById("upgrade").addEventListener("click", function () {
-            if (click_count >= upgrade_cost) {
-                click_count -= upgrade_cost;
-                upgrade_count++;
-                upgrade_cost = Math.floor(upgrade_cost * 1.5);
-                disp.innerHTML = click_count;
-                upgradeDisp.innerHTML = upgrade_cost;
-                upgradeCountDisp.innerHTML = upgrade_count;
-                cpsDisp.innerHTML = upgrade_count;
-                updateAchievements();
+            if (click_count < upgrade_cost) {
+                showInsufficientFunds(this, upgrade_cost);
+                return;
             }
+            click_count -= upgrade_cost;
+            upgrade_count++;
+            upgrade_cost = Math.floor(upgrade_cost * 1.5);
+            disp.innerHTML = click_count;
+            upgradeDisp.innerHTML = upgrade_cost;
+            upgradeCountDisp.innerHTML = upgrade_count;
+            updateAutoSpeedUI();
+            updateAchievements();
+            updateRebirthUI();
         });
 
         document.getElementById("click-upgrade").addEventListener("click", function () {
-            if (click_count >= click_upgrade_cost) {
-                click_count -= click_upgrade_cost;
-                click_power *= 2;
-                click_upgrade_cost = Math.floor(click_upgrade_cost * 1.8);
-                disp.innerHTML = click_count;
-                clickUpgradeDisp.innerHTML = click_upgrade_cost;
-                clickPowerDisp.innerHTML = click_power;
-                updateAchievements();
+            if (click_count < click_upgrade_cost) {
+                showInsufficientFunds(this, click_upgrade_cost);
+                return;
             }
+            click_count -= click_upgrade_cost;
+            click_power *= 2;
+            click_upgrade_cost = Math.floor(click_upgrade_cost * 1.8);
+            disp.innerHTML = click_count;
+            clickUpgradeDisp.innerHTML = click_upgrade_cost;
+            clickPowerDisp.innerHTML = click_power;
+            updateAchievements();
+            updateRebirthUI();
         });
 
         document.getElementById("lucky-upgrade").addEventListener("click", function () {
-            if (click_count >= lucky_upgrade_cost && lucky_level < 5) {
-                click_count -= lucky_upgrade_cost;
-                lucky_level++;
-                lucky_upgrade_cost = Math.floor(lucky_upgrade_cost * 1.8);
-                disp.innerHTML = click_count;
-                luckyChanceDisp.innerHTML = lucky_level * 10 + "%";
-                luckyCostDisp.innerHTML = lucky_upgrade_cost;
-                if (lucky_level === 5) {
-                    luckyUpgradeButton.textContent = "Max level";
-                    luckyUpgradeButton.disabled = true;
-                }
-                updateAchievements();
+            if (lucky_level >= 5) return;
+            if (click_count < lucky_upgrade_cost) {
+                showInsufficientFunds(this, lucky_upgrade_cost);
+                return;
             }
+            click_count -= lucky_upgrade_cost;
+            lucky_level++;
+            lucky_upgrade_cost = Math.floor(lucky_upgrade_cost * 1.8);
+            disp.innerHTML = click_count;
+            luckyChanceDisp.innerHTML = lucky_level * 10 + "%";
+            luckyCostDisp.innerHTML = lucky_upgrade_cost;
+            if (lucky_level === 5) {
+                luckyUpgradeButton.disabled = true;
+                luckyUpgradeButton.setAttribute("aria-label", "Lucky Paw is at max level");
+            }
+            updateAchievements();
+            updateRebirthUI();
+        });
+
+        document.getElementById("auto-speed-upgrade").addEventListener("click", function () {
+            if (click_count < auto_speed_upgrade_cost) {
+                showInsufficientFunds(this, auto_speed_upgrade_cost);
+                return;
+            }
+            click_count -= auto_speed_upgrade_cost;
+            auto_click_speed *= 1.25;
+            auto_speed_upgrade_cost = Math.floor(auto_speed_upgrade_cost * 1.7);
+            disp.textContent = click_count;
+            updateAutoSpeedUI();
+            updateRebirthUI();
+        });
+
+        rebirthButton.addEventListener("click", function () {
+            let rebirthCost = 1000 * Math.pow(2, rebirth_count);
+            if (click_count < rebirthCost) {
+                showInsufficientFunds(rebirthButton, rebirthCost);
+                return;
+            }
+            if (!window.confirm("Rebirth now? Your cash and upgrades will reset.")) return;
+
+            let multiplierRolls = [1.25, 1.5, 1.75, 2];
+            let multiplierGain = multiplierRolls[Math.floor(Math.random() * multiplierRolls.length)];
+            let availableThemes = rebirthThemes.filter(function (theme) { return theme.name !== currentTheme; });
+            let newTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
+
+            rebirth_count++;
+            earnings_multiplier *= multiplierGain;
+            click_count = 0;
+            upgrade_count = 0;
+            auto_click_speed = 1;
+            auto_speed_upgrade_cost = 100;
+            auto_click_progress = 0;
+            upgrade_cost = 10;
+            click_power = 1;
+            click_upgrade_cost = 25;
+            lucky_level = 0;
+            lucky_upgrade_cost = 75;
+
+            disp.textContent = click_count;
+            upgradeDisp.textContent = upgrade_cost;
+            upgradeCountDisp.textContent = upgrade_count;
+            updateAutoSpeedUI();
+            clickUpgradeDisp.textContent = click_upgrade_cost;
+            clickPowerDisp.textContent = click_power;
+            luckyChanceDisp.textContent = "0%";
+            luckyCostDisp.textContent = lucky_upgrade_cost;
+            luckyUpgradeButton.disabled = false;
+            luckyUpgradeButton.setAttribute("aria-label", "Buy Lucky Paw");
+            applyTheme(newTheme);
+            updateAchievements();
+            updateRebirthUI();
         });
 
         updateAchievements();
+        updateAutoSpeedUI();
+        updateRebirthUI();
 
     </script>
 </body>
