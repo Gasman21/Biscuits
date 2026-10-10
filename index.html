@@ -340,7 +340,7 @@
             <p>Requirement: $<span id="rebirth-cost">1000</span></p>
             <p>Rebirths: <span id="rebirth-count">0</span></p>
             <p>Earnings multiplier: x<span id="earnings-multiplier">1</span></p>
-            <p>Next rebirth bonus: random x1.25 to x2 and a new color theme.</p>
+            <p>Next rebirth bonus: random x1.25 to x2 money multiplier and a new color theme.</p>
             <p>Current theme: <span id="theme-name">Classic</span></p>
         </section>
     </section>
@@ -575,7 +575,7 @@
         }
 
         function updateRebirthUI() {
-            let rebirthCost = 1000 * Math.pow(2, rebirth_count);
+            let rebirthCost = 1000 * Math.pow(5, rebirth_count);
             rebirthCostDisp.textContent = rebirthCost;
             rebirthCountDisp.textContent = rebirth_count;
             earningsMultiplierDisp.textContent = Number(earnings_multiplier.toFixed(2));
@@ -693,7 +693,7 @@
         });
 
         rebirthButton.addEventListener("click", function () {
-            let rebirthCost = 1000 * Math.pow(2, rebirth_count);
+            let rebirthCost = 1000 * Math.pow(5, rebirth_count);
             if (click_count < rebirthCost) {
                 showInsufficientFunds(rebirthButton, rebirthCost);
                 return;
