@@ -12,6 +12,30 @@
         --font-section-title: 22px;
         --font-page-title: 28px;
     }
+    :root.rainbow-theme {
+        --red: #ffca3a;
+        --white: #ffffff;
+        --black: #120b1c;
+        --rainbow: linear-gradient(105deg, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e);
+    }
+    html.rainbow-theme body {
+        background-image: linear-gradient(115deg, rgba(255, 89, 94, 0.16), transparent 26%, rgba(255, 202, 58, 0.12) 42%, transparent 62%, rgba(25, 130, 196, 0.16) 78%, rgba(106, 76, 147, 0.14));
+        background-attachment: fixed;
+    }
+    html.rainbow-theme .tabs button {
+        border-color: transparent;
+        background: linear-gradient(var(--black), var(--black)) padding-box, var(--rainbow) border-box;
+    }
+    html.rainbow-theme .tabs button[aria-selected="true"] {
+        background: var(--rainbow);
+        color: var(--black);
+    }
+    html.rainbow-theme .shop-item,
+    html.rainbow-theme .achievement-item,
+    html.rainbow-theme .rebirth-panel {
+        border-color: transparent;
+        background: linear-gradient(var(--black), var(--black)) padding-box, var(--rainbow) border-box;
+    }
     body {
         font-family: var(--font-family);
         font-size: var(--font-body);
@@ -167,6 +191,20 @@
     }
     .achievement-item.unlocked {
         border-width: 3px;
+    }
+    #achievement-eternal-kitty {
+        border: 3px solid transparent;
+        background:
+            linear-gradient(var(--black), var(--black)) padding-box,
+            linear-gradient(120deg, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e) border-box;
+    }
+    #achievement-eternal-kitty h3 {
+        width: fit-content;
+        color: var(--white);
+        background-image: linear-gradient(90deg, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     .achievement-item h3 {
         margin: 0 0 6px;
@@ -540,6 +578,7 @@
         let auto_speed_upgrade_cost = 100;
         let auto_click_progress = 0;
         let click_power = 1;
+        let click_earning_progress = 0;
         let click_upgrade_cost = 25;
         let lucky_level = 0;
         let lucky_upgrade_cost = 75;
@@ -661,6 +700,7 @@
                     unlockedCount++;
                     if (!unlockedAchievements.has(achievement.id)) {
                         unlockedAchievements.add(achievement.id);
+                        if (achievement.id === "eternal-kitty") applyRainbowTheme();
                         showAchievementNotification(card.querySelector("h3").textContent);
                     }
                 }
@@ -724,10 +764,20 @@
         }
 
         function applyTheme(theme) {
+            document.documentElement.classList.remove("rainbow-theme");
             document.documentElement.style.setProperty("--red", theme.accent);
             document.documentElement.style.setProperty("--white", theme.foreground);
             document.documentElement.style.setProperty("--black", theme.background);
             currentTheme = theme.name;
+        }
+
+        function applyRainbowTheme() {
+            let root = document.documentElement;
+            root.classList.add("rainbow-theme");
+            root.style.setProperty("--red", "#ffca3a");
+            root.style.setProperty("--white", "#ffffff");
+            root.style.setProperty("--black", "#120b1c");
+            currentTheme = "Rainbow";
         }
 
         function updateAutoSpeedUI() {
@@ -740,7 +790,9 @@
 
         btn.addEventListener("click", function (event) {
             let luckyHit = lucky_level > 0 && Math.random() < lucky_level * 0.1;
-            let earned = Math.floor(click_power * (luckyHit ? 3 : 1) * earnings_multiplier);
+            click_earning_progress += click_power * (luckyHit ? 3 : 1) * earnings_multiplier;
+            let earned = Math.floor(click_earning_progress);
+            click_earning_progress -= earned;
             click_count += earned;
             total_money_earned += earned;
             disp.innerHTML = click_count;
@@ -852,6 +904,7 @@
             auto_click_speed = 1;
             auto_speed_upgrade_cost = 100;
             auto_click_progress = 0;
+            click_earning_progress = 0;
             upgrade_cost = 10;
             click_power = 1;
             click_upgrade_cost = 25;
