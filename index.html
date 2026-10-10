@@ -1,28 +1,235 @@
 <!DOCTYPE html>
 <html>
-
-<body style="text-align: center;">
-    <h1 style="Font: Comic Sans MS, Comic Sans, cursive; color: red;">
+<title>Kitty Clicker</title>
+<style>
+    :root {
+        --red: #c1121f;
+        --white: #ffffff;
+        --black: #000000;
+    }
+    #btn {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        transition: transform 160ms ease, filter 160ms ease;
+    }
+    #btn:hover {
+        transform: scale(1.06) rotate(-2deg);
+        filter: drop-shadow(0 0 12px var(--red));
+    }
+    #btn:active {
+        transform: scale(0.92) rotate(2deg);
+    }
+    .click-feedback {
+        position: fixed;
+        z-index: 10;
+        color: var(--red);
+        font: bold 24px Comic Sans MS, Comic Sans, cursive;
+        text-shadow: 1px 2px 0 white;
+        pointer-events: none;
+        animation: float-up 700ms ease-out forwards;
+    }
+    @keyframes float-up {
+        from { opacity: 1; transform: translate(-50%, -50%) scale(0.7) rotate(-8deg); }
+        to { opacity: 0; transform: translate(-50%, -95px) scale(1.3) rotate(8deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #btn { transition: none; }
+        .click-feedback { animation-duration: 1ms; }
+    }
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 12px 0 20px;
+    }
+    .tabs button {
+        padding: 10px 22px;
+        border: 2px solid var(--red);
+        border-radius: 6px;
+        background: var(--black);
+        color: var(--white);
+        font: bold 18px Comic Sans MS, Comic Sans, cursive;
+        cursor: pointer;
+    }
+    .tabs button[aria-selected="true"] {
+        background: var(--red);
+        color: var(--white);
+    }
+    .shop-grid {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 0 12px 24px;
+    }
+    .shop-item {
+        width: min(290px, 100%);
+        box-sizing: border-box;
+        padding: 16px;
+        border: 2px solid var(--red);
+        border-top: 5px solid var(--red);
+        border-radius: 6px;
+        background: var(--black);
+        color: var(--white);
+    }
+    .shop-item img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .shop-item button {
+        max-width: 100%;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+</style>
+<body style="background-color: var(--black); color: var(--white); text-align: center;">
+    <h1 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">
         Clicker
     
     </h1>
-    <h4 style="Font: Comic Sans MS, Comic Sans, cursive; color: red;">
+    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 32px;">
+        $<span id="display">0</span>
+    </p>
+    <nav class="tabs" aria-label="Main navigation">
+        <button id="game-tab" type="button" aria-selected="true" aria-controls="game-page">Game</button>
+        <button id="shop-tab" type="button" aria-selected="false" aria-controls="shop-page">Shop</button>
+    </nav>
+    <main>
+    <section id="game-page">
+    <h4 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">
         Click the kitty :3
     </h4>
-    <button id="btn"><img src="data:image/jpeg;base64,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" alt="Kitty"></button>
-    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: red;">
-           $<span id="display">0</span>
+    <button id="btn"><img src="data:image/jpeg;base64,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" alt="Kitty" width="250" height="250"></button>
+    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size : 20px;">
+        Autoclickers: <span id="upgrade-count">0</span>
     </p>
+    <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size : 20px;">
+        Auto-clicks per second: <span id="cps-display">0</span>
+    </p>
+    </section>
+    <section id="shop-page" hidden>
+        <h2 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Shop</h2>
+        <div class="shop-grid">
+            <article class="shop-item">
+                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Autoclicker</h3>
+                <button id="upgrade" type="button" aria-label="Buy autoclicker">
+                    <img src="https://www.lovemeow.com/media-library/image.jpg?id=4142900&width=800&quality=85" alt="Autoclicker upgrade">
+                </button>
+                <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 20px;">
+                    Cost: $<span id="upgrade-display">10</span>
+                </p>
+            </article>
+            <article class="shop-item">
+                <h3 style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white);">Click Power</h3>
+                <button id="click-upgrade" type="button" aria-label="Upgrade click power">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpz9Fkg5yMdzt7CiZVs2Y6lIpc3MNfvD8EtErvhVwjcQ&s=10" alt="Click power upgrade">
+                </button>
+                <p style="Font: Comic Sans MS, Comic Sans, cursive; color: var(--white); font-size: 20px;">
+                    Cost: $<span id="click-upgrade-display">25</span>
+                    | Power: x<span id="click-power-display">1</span>
+                </p>
+            </article>
+        </div>
+    </section>
+    </main>
     <script type="text/javascript">
-        let count = 0;
+        let click_count = 0;
+        let upgrade_cost = 10;
+        let upgrade_count = 0;
+        let click_power = 1;
+        let click_upgrade_cost = 25;
         let btn = document.getElementById("btn");
         let disp = document.getElementById("display");
-        
-        btn.addEventListener("click", function () {
-            count++;
-            disp.innerHTML = count;
+        let upgradeDisp = document.getElementById("upgrade-display");
+        let upgradeCountDisp = document.getElementById("upgrade-count");
+        let cpsDisp = document.getElementById("cps-display");
+        let clickUpgradeDisp = document.getElementById("click-upgrade-display");
+        let clickPowerDisp = document.getElementById("click-power-display");
+        let gamePage = document.getElementById("game-page");
+        let shopPage = document.getElementById("shop-page");
+        let gameTab = document.getElementById("game-tab");
+        let shopTab = document.getElementById("shop-tab");
+
+        gameTab.addEventListener("click", function () {
+            gamePage.hidden = false;
+            shopPage.hidden = true;
+            gameTab.setAttribute("aria-selected", "true");
+            shopTab.setAttribute("aria-selected", "false");
         });
+
+        shopTab.addEventListener("click", function () {
+            gamePage.hidden = true;
+            shopPage.hidden = false;
+            gameTab.setAttribute("aria-selected", "false");
+            shopTab.setAttribute("aria-selected", "true");
+        });
+
+        function showClickEffect(amount, x, y) {
+            if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                btn.animate([
+                { transform: "scale(1) rotate(0deg)" },
+                { transform: "scale(0.9) rotate(-5deg)" },
+                { transform: "scale(1.08) rotate(4deg)" },
+                { transform: "scale(1) rotate(0deg)" }
+                ], { duration: 360, easing: "ease-out" });
+            }
+
+            let feedback = document.createElement("span");
+            feedback.className = "click-feedback";
+            feedback.textContent = "+" + amount;
+            feedback.style.left = x + "px";
+            feedback.style.top = y + "px";
+            document.body.appendChild(feedback);
+            setTimeout(function () { feedback.remove(); }, 700);
+        }
+
+        btn.addEventListener("click", function (event) {
+            click_count += click_power;
+            disp.innerHTML = click_count;
+            showClickEffect(click_power, event.clientX, event.clientY);
+        });
+
+        setInterval(function () {
+            if (upgrade_count > 0) {
+                let autoClicks = upgrade_count;
+                click_count += autoClicks;
+                disp.innerHTML = click_count;
+                let kittyBounds = btn.getBoundingClientRect();
+                showClickEffect(
+                    autoClicks,
+                    kittyBounds.left + kittyBounds.width / 2,
+                    kittyBounds.top + kittyBounds.height / 2
+                );
+            }
+        }, 1000);
         
+        document.getElementById("upgrade").addEventListener("click", function () {
+            if (click_count >= upgrade_cost) {
+                click_count -= upgrade_cost;
+                upgrade_count++;
+                upgrade_cost = Math.floor(upgrade_cost * 1.5);
+                disp.innerHTML = click_count;
+                upgradeDisp.innerHTML = upgrade_cost;
+                upgradeCountDisp.innerHTML = upgrade_count;
+                cpsDisp.innerHTML = upgrade_count;
+            }
+        });
+
+        document.getElementById("click-upgrade").addEventListener("click", function () {
+            if (click_count >= click_upgrade_cost) {
+                click_count -= click_upgrade_cost;
+                click_power *= 2;
+                click_upgrade_cost = Math.floor(click_upgrade_cost * 1.8);
+                disp.innerHTML = click_count;
+                clickUpgradeDisp.innerHTML = click_upgrade_cost;
+                clickPowerDisp.innerHTML = click_power;
+            }
+        });
+
     </script>
 </body>
 </html>
